@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Nhân Viên</title>
+    <title>Sửa Nhân Viên</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for Icons -->
@@ -80,3 +80,99 @@
         }
     </style>
 </head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h4 class="text-center text-white mb-4">Quản lý Nhân sự</h4>
+        <a href="index.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+        <a href="index.php" class="active"><i class="fas fa-users me-2"></i> Nhân viên</a>
+        <a href="#"><i class="fas fa-money-bill me-2"></i> Lương</a>
+        <a href="#"><i class="fas fa-chart-bar me-2"></i> Báo cáo</a>
+        <a href="logout.php"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-custom mb-4">
+            <div class="container-fluid">
+                <span class="navbar-brand">Sửa Nhân Viên</span>
+                <div class="ms-auto">
+                    <span class="navbar-text greeting-message">
+                        Xin chào, <?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Khách'; ?>!
+                    </span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Form Sửa Nhân Viên -->
+        <div class="form-card mx-auto" style="max-width: 600px;">
+            <h2 class="text-center mb-4">Sửa Nhân Viên</h2>
+            <form action="index.php?action=update" method="post">
+                <input type="hidden" id="Ma_NV" name="Ma_NV" value="<?php echo $nhanvien['Ma_NV']; ?>">
+
+                <div class="mb-3">
+                    <label for="Ma_NV" class="form-label">Mã Nhân Viên</label>
+                    <input type="text" class="form-control" id="Ma_NV_display" value="<?php echo $nhanvien['Ma_NV']; ?>"
+                        disabled>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Ten_NV" class="form-label">Tên Nhân Viên</label>
+                    <input type="text" class="form-control" id="Ten_NV" name="Ten_NV"
+                        value="<?php echo $nhanvien['Ten_NV']; ?>" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Phai" class="form-label">Giới tính</label>
+                    <select class="form-select" id="Phai" name="Phai">
+                        <option value="NAM" <?php if ($nhanvien['Phai'] == 'NAM')
+                            echo 'selected'; ?>>Nam</option>
+                        <option value="NU" <?php if ($nhanvien['Phai'] == 'NU')
+                            echo 'selected'; ?>>Nữ</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Noi_Sinh" class="form-label">Nơi Sinh</label>
+                    <input type="text" class="form-control" id="Noi_Sinh" name="Noi_Sinh"
+                        value="<?php echo $nhanvien['Noi_Sinh']; ?>">
+                </div>
+
+                <div class="mb-3">
+                    <label for="Ma_Phong" class="form-label">Mã Phòng</label>
+                    <select class="form-select" id="Ma_Phong" name="Ma_Phong" required>
+                        <option value="QT" <?php if ($nhanvien['Ma_Phong'] == 'QT')
+                            echo 'selected'; ?>>Quản Trị (QT)
+                        </option>
+                        <option value="TC" <?php if ($nhanvien['Ma_Phong'] == 'TC')
+                            echo 'selected'; ?>>Tài Chính (TC)
+                        </option>
+                        <option value="KT" <?php if ($nhanvien['Ma_Phong'] == 'KT')
+                            echo 'selected'; ?>>Kỹ Thuật (KT)
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Luong" class="form-label">Lương</label>
+                    <input type="number" class="form-control" id="Luong" name="Luong"
+                        value="<?php echo $nhanvien['Luong']; ?>" required>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-custom"><i class="fas fa-save me-2"></i> Cập
+                        nhật</button>
+                    <a href="index.php" class="btn btn-secondary btn-custom"><i class="fas fa-arrow-left me-2"></i> Quay
+                        lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
