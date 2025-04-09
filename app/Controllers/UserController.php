@@ -1,60 +1,98 @@
 <?php
-require_once __DIR__ . '/../Models/NhanVien.php';
+require_once 'app/Models/User.php';
 
-class NhanVienController
+class UserController
 {
-    private $nhanvienModel;
+    private $userModel;
     private $conn;
 
     public function __construct($conn)
     {
         $this->conn = $conn;
-        $this->nhanvienModel = new NhanVien($this->conn);
+        $this->userModel = new User($this->conn);
     }
 
-    public function index()
+    public function register()
     {
-        $limit = 5;
-        $page = isset($_GET['page']) ? $_GET['page'] : 1;
-        $start = ($page - 1) * $limit;
-
-        $nhanviens = $this->nhanvienModel->getAll($start, $limit);
-        $total_records = $this->nhanvienModel->getTotalRecords();
-        $total_pages = ceil($total_records / $limit);
-
-        include 'app/Views/nhanvien/index.php';
-    }
-
-    public function create()
-    {
-        if (isset($_SESSION['role']) && $_SESSION['role'] == 'admin') {
-            include 'app/Views/nhanvien/create.php';
+        $file = __DIR__ . '/../Views/user/register_form.php';
+        if (file_exists($file)) {
+            include $file;
         } else {
-            echo "Bạn không có quyền thực hiện thao tác này.";
+            die("Error: Cannot find register_form.php at $file");
         }
     }
 
 
-    public function store()
+    public function processRegister()
     {
-        if ($_SESSION['role'] == 'admin') {
-            $Ma_NV = $_POST['Ma_NV'];
-            $Ten_NV = $_POST['Ten_NV'];
-            $Phai = $_POST['Phai'];
-            $Noi_Sinh = $_POST['Noi_Sinh'];
-            $Ma_Phong = $_POST['Ma_Phong'];
-            $Luong = $_POST['Luong'];
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $username = $_POST["username"];
+            $password = $_POST["password"];
+            $confirm_password = $_POST["confirm_password"];
 
-            if ($this->nhanvienModel->create($Ma_NV, $Ten_NV, $Phai, $Noi_Sinh, $Ma_Phong, $Luong)) {
-                header("Location: index.php");
-            } else {
-                echo "Có lỗi xảy ra khi thêm nhân viên. Xem chi tiết bên trên.";
+            if (empty($username) || empty($password) || empty($confirm_password)) {
+                return "Vui lòng điền đầy đủ thông tin.";
             }
-        } else {
-            echo "Bạn không có quyền thực hiện thao tác này.";
+
+            if ($password !== $confirm_password) {
+                return "Mật khẩu xác nhận không khớp.";
+            }
+
+            $sql = "SELECT id FROM users WHERE username = '$username'";
+            $result = $this->conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                return "Tên tài khoản đã tồn tại.";
+            }
+
+            $sql = "INSERT INTO users (username, password, role) VALUES ('$username', '$password', 'user')";
+            if ($this->conn->query($sql) === TRUE) {
+                header("Location: login.php?register=success");
+                exit();
+            } else {
+                return "Lỗi khi đăng ký: " . $this->conn->error;
+            }
         }
     }
 
+    public function login()
+    {
+        include '../Views/user/login_form.php';
+    }
 
+    public function processLogin()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $username = $_POST["username"];
+            $password = $_POST["password"];
+
+            $sql = "SELECT id, username, password, role FROM users WHERE username = '$username'";
+            $result = $this->conn->query($sql);
+
+            if ($result->num_rows == 1) {
+                $row = $result->fetch_assoc();
+                if ($password == $row["password"]) {
+                    session_start();
+                    $_SESSION["user_id"] = $row["id"];
+                    $_SESSION["username"] = $row["username"];
+                    $_SESSION["role"] = $row["role"];
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    return "Sai mật khẩu.";
+                }
+            } else {
+                return "Tài khoản không tồn tại.";
+            }
+        }
+    }
+
+    public function logout()
+    {
+        session_start();
+        session_destroy();
+        header("Location: login.php");
+        exit();
+    }
 }
 ?>
