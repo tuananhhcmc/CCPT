@@ -21,4 +21,46 @@ class NhanVien {
         }
         return $nhanviens;
     }
+
+    public function getTotalRecords() {
+        $sql_total = "SELECT COUNT(*) AS total FROM NHANVIEN";
+        $result_total = $this->conn->query($sql_total);
+        $row_total = $result_total->fetch_assoc();
+        return $row_total['total'];
+    }
+
+    public function create($Ma_NV, $Ten_NV, $Phai, $Noi_Sinh, $Ma_Phong, $Luong) {
+        $sql = "INSERT INTO NHANVIEN (Ma_NV, Ten_NV, Phai, Noi_Sinh, Ma_Phong, Luong)
+                VALUES ('$Ma_NV', '$Ten_NV', '$Phai', '$Noi_Sinh', '$Ma_Phong', $Luong)";
+
+        if ($this->conn->query($sql) === TRUE) {
+            return true;
+        } else {
+            echo "Lỗi: " . $sql . "<br>" . $this->conn->error;
+            return false;
+        }
+    }
+
+    public function getByMaNV($Ma_NV) {
+        $sql = "SELECT Ma_NV, Ten_NV, Phai, Noi_Sinh, Ma_Phong, Luong FROM NHANVIEN WHERE Ma_NV = '$Ma_NV'";
+        $result = $this->conn->query($sql);
+        if ($result->num_rows == 1) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
+    }
+
+    public function update($Ma_NV, $Ten_NV, $Phai, $Noi_Sinh, $Ma_Phong, $Luong) {
+        $sql = "UPDATE NHANVIEN SET Ten_NV = '$Ten_NV', Phai = '$Phai', Noi_Sinh = '$Noi_Sinh',
+                        Ma_Phong = '$Ma_Phong', Luong = $Luong
+                WHERE Ma_NV = '$Ma_NV'";
+        return $this->conn->query($sql);
+    }
+
+    public function delete($Ma_NV) {
+        $sql = "DELETE FROM NHANVIEN WHERE Ma_NV = '$Ma_NV'";
+        return $this->conn->query($sql);
+    }
 }
+?>
