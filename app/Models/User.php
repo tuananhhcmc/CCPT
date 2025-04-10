@@ -1,15 +1,12 @@
 <?php
-class User
-{
+class User {
     private $conn;
 
-    public function __construct($conn)
-    {
+    public function __construct($conn) {
         $this->conn = $conn;
     }
 
-    public function getUserByUsername($username)
-    {
+    public function getUserByUsername($username) {
         $sql = "SELECT id, username, password, role FROM users WHERE username = '$username'";
         $result = $this->conn->query($sql);
         if ($result->num_rows == 1) {
